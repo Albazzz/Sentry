@@ -31,21 +31,22 @@ CREATE TABLE Users (
     UserID INT PRIMARY KEY IDENTITY,
     RoleID INT FOREIGN KEY REFERENCES Roles(RoleID),
     Email NVARCHAR(255) UNIQUE NOT NULL,
-    PasswordHash NVARCHAR(255),
-    GoogleID NVARCHAR(255),
+    Password NVARCHAR(255),
     FullName NVARCHAR(100),
     CreatedAt DATETIME DEFAULT GETDATE(),
     IsActive BIT DEFAULT 1,
-    IsLocked BIT DEFAULT 0,
-    BirthDate DATE,
+    IsBan BIT DEFAULT 0,
     PhoneNumber NVARCHAR(20),
     JapaneseLevel NVARCHAR(50),
-    Address NVARCHAR(255),
-    Country NVARCHAR(100),
     Avatar NVARCHAR(MAX),
-    Gender NVARCHAR(10) CONSTRAINT DF_Users_Gender DEFAULT N'Khác',
-    IsTeacherPending BIT DEFAULT 0,
-    CertificatePath NVARCHAR(500)
+    Gender NVARCHAR(10) CONSTRAINT DF_Users_Gender DEFAULT N'Khác'
+);
+
+-- Bảng Teacher
+CREATE TABLE Teacher (
+    UserID INT PRIMARY KEY FOREIGN KEY REFERENCES Users(UserID),
+    TeacherPending BIT DEFAULT 0,
+    Certificate NVARCHAR(500)
 );
 
 -- Bảng Payments
@@ -53,16 +54,9 @@ CREATE TABLE Payments (
     PaymentID INT PRIMARY KEY IDENTITY(1,1),
     UserID INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
     PlanID INT NOT NULL FOREIGN KEY REFERENCES PremiumPlans(PlanID),
-    Amount FLOAT NOT NULL,
     PaymentDate DATETIME NULL,
-    TransactionNo NVARCHAR(100) NULL,
-    OrderInfo NVARCHAR(255),
     ResponseCode NVARCHAR(20) NULL,
-    TransactionStatus NVARCHAR(50),
-    OrderCode BIGINT,
-    CheckoutUrl NVARCHAR(500),
-    Status NVARCHAR(50),
-    CreatedAt DATETIME DEFAULT GETDATE()
+    Status NVARCHAR(50)
 );
 
 -- Bảng UserPremium
@@ -70,8 +64,7 @@ CREATE TABLE UserPremium (
     UserID INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
     PlanID INT NOT NULL FOREIGN KEY REFERENCES PremiumPlans(PlanID),
     StartDate DATETIME NOT NULL,
-    EndDate DATETIME NOT NULL,
-    PRIMARY KEY (UserID, PlanID, StartDate)
+    EndDate DATETIME NOT NULL
 );
 
 -- Bảng Courses
@@ -101,7 +94,7 @@ CREATE TABLE Lessons (
     Title NVARCHAR(255),
     Description NVARCHAR(1000),
     IsHidden BIT DEFAULT 0,
-    OrderIndex INT DEFAULT 0
+    StudyStatus INT DEFAULT 0
 );
 
 -- Bảng LessonMaterials
@@ -109,11 +102,7 @@ CREATE TABLE LessonMaterials (
     MaterialID INT PRIMARY KEY IDENTITY(1,1),
     LessonID INT NOT NULL FOREIGN KEY REFERENCES Lessons(LessonID),
     MaterialType NVARCHAR(50) NOT NULL,
-    FileType NVARCHAR(50) NOT NULL,
-    Title NVARCHAR(255),
-    FilePath NVARCHAR(MAX),
-    IsHidden BIT DEFAULT 0,
-    CreatedAt DATETIME DEFAULT GETDATE()
+    FilePath NVARCHAR(MAX)
 );
 
 -- Bảng Vocabulary
@@ -127,15 +116,6 @@ CREATE TABLE Vocabulary (
     imagePath VARCHAR(255) DEFAULT NULL
 );
 
--- Bảng UserVocabulary
-CREATE TABLE UserVocabulary (
-    UserVocabID INT PRIMARY KEY IDENTITY,
-    UserID INT,
-    Word NVARCHAR(100),
-    Meaning NVARCHAR(255),
-    CreatedAt DATETIME DEFAULT GETDATE()
-);
-
 -- Bảng Kanji
 CREATE TABLE Kanji (
     KanjiID INT PRIMARY KEY IDENTITY,
@@ -143,7 +123,6 @@ CREATE TABLE Kanji (
     Onyomi NVARCHAR(100),
     Kunyomi NVARCHAR(100),
     Meaning NVARCHAR(255),
-    StrokeCount INT,
     LessonID INT FOREIGN KEY REFERENCES Lessons(LessonID)
 );
 
@@ -157,7 +136,7 @@ CREATE TABLE Flashcards (
     IsPublic BIT DEFAULT 0,
     Description NVARCHAR(500),
     CoverImage NVARCHAR(500),
-    CourseID INT NULL FOREIGN KEY REFERENCES Courses(CourseID)
+    LessonID INT NULL FOREIGN KEY REFERENCES Lessons(LessonID)
 );
 
 -- Bảng FlashcardItems
@@ -165,7 +144,6 @@ CREATE TABLE FlashcardItems (
     FlashcardItemID INT PRIMARY KEY IDENTITY,
     FlashcardID INT FOREIGN KEY REFERENCES Flashcards(FlashcardID),
     VocabID INT NULL FOREIGN KEY REFERENCES Vocabulary(VocabID),
-    UserVocabID INT NULL FOREIGN KEY REFERENCES UserVocabulary(UserVocabID),
     Note NVARCHAR(255),
     FrontContent NVARCHAR(500),
     BackContent NVARCHAR(500),
@@ -198,12 +176,12 @@ CREATE TABLE Answers (
     AnswerNumber INT CHECK (AnswerNumber BETWEEN 1 AND 4)
 );
 
--- Bảng QuizResults
-CREATE TABLE QuizResults (
+-- Bảng UserAnswer
+CREATE TABLE UserAnswer (
     ResultID INT PRIMARY KEY IDENTITY,
     UserID INT,
-    QuizID INT FOREIGN KEY REFERENCES Quizzes(QuizID),
-    Score INT,
+    QuestionID INT FOREIGN KEY REFERENCES Questions(QuestionID),
+    UserAnswer NVARCHAR(MAX),
     TakenAt DATETIME DEFAULT GETDATE()
 );
 
@@ -276,6 +254,19 @@ CREATE TABLE Progress (
     UserID INT,
     CourseID INT FOREIGN KEY REFERENCES Courses(CourseID),
     LessonID INT FOREIGN KEY REFERENCES Lessons(LessonID),
-    CompletionPercent INT CHECK (CompletionPercent BETWEEN 0 AND 100),
-    LastAccessed DATETIME DEFAULT GETDATE()
+    CompletionPercent INT CHECK (CompletionPercent BETWEEN 0 AND 100)
+);
+
+-- Bảng UserToken
+CREATE TABLE UserToken (
+    AccessTokenID INT PRIMARY KEY IDENTITY,
+    UserID INT FOREIGN KEY REFERENCES Users(UserID),
+    RefreshID NVARCHAR(255),
+    DeviceID NVARCHAR(255)
+);
+
+-- Bảng GoogleToken
+CREATE TABLE GoogleToken (
+    GGID INT PRIMARY KEY IDENTITY,
+    UserID INT FOREIGN KEY REFERENCES Users(UserID)
 );
