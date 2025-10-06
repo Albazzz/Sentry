@@ -264,6 +264,10 @@ CREATE TABLE UserToken (
     RefreshID NVARCHAR(255),
     DeviceID NVARCHAR(255)
 );
+ALTER TABLE UserToken
+ADD IPAddress NVARCHAR(50),
+    ExpiresAt DATETIME,
+    IsRevoked BIT DEFAULT 0;
 
 -- Bảng GoogleToken
 CREATE TABLE GoogleToken (
