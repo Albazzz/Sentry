@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{login.pageTitle}">Đăng Nhập - Sentry</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Các thư viện khác nếu cần, ví dụ GSAP cho animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/MorphSVGPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="toggle-box">
+        <div class="toggle-panel toggle-left">
+            <!-- Include bear animation nếu có, giả sử bear.jsp được chuyển sang Thymeleaf fragment -->
+            <div th:insert="~{yeti/yeti}"></div>
+            <p th:text="#{login.noAccount}">Chưa có tài khoản?</p>
+            <a th:href="@{/signup}" class="btn register-btn" th:text="#{login.registerBtn}">Đăng ký</a>
+        </div>
+        <div class="toggle-panel toggle-right">
+            <h1 th:text="#{login.welcome}">Xin chào</h1>
+            <p th:text="#{login.hasAccount}">Đã có sẵn tài khoản?</p>
+            <a th:href="@{/login}" class="btn login-btn" th:text="#{login.loginBtn}">Đăng nhập</a>
+        </div>
+    </div>
+
+    <!-- Form Đăng nhập -->
+    <div class="form-box login">
+        <form th:action="@{/login}" method="post">
+            <h1 th:text="#{login.title}">Đăng nhập</h1>
+            <div class="input-box">
+                <input type="email" id="email" name="email" th:placeholder="#{login.emailPlaceholder}" th:value="${email}" required>
+                <i class='bx bxs-user'></i>
+            </div>
+            <div class="input-box">
+                <input type="password" id="password" name="password" th:placeholder="#{login.passwordPlaceholder}" th:value="${password}" required>
+                <i class='bx bxs-lock-alt'></i>
+            </div>
+
+            <div class="box-box">
+                <div class="checkbox-group">
+                    <label for="rememberMe" th:text="#{login.rememberMe}">Lưu tài khoản</label>
+                    <input type="checkbox" id="rememberMe" name="rememberMe" th:checked="${rememberMe == 'on'}" />
+                </div>
+                <div class="forgot-link">
+                    <a th:href="@{/forgot-password}" th:text="#{login.forgotPassword}">Quên mật khẩu?</a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn" th:text="#{login.submitBtn}">Đăng nhập</button>
+            <p th:text="#{login.orLoginWith}">hoặc đăng nhập với ứng dụng khác</p>
+            <div class="social-icons">
+                <a th:href="@{/login-google}"><i class='bx bxl-google'></i></a>
+                <a href="#"><i class='bx bxl-facebook'></i></a>
+                <a href="#"><i class='bx bxl-github'></i></a>
+                <a href="#"><i class='bx bxl-linkedin'></i></a>
+            </div>
+            <div th:if="${param.error}" class="error-message" style="color: red;">
+                <p th:text="#{login.errorInvalidCredentials}">Email hoặc mật khẩu không đúng!</p>
+            </div>
+            <div th:if="${message}" class="error-message" style="color: red;" th:text="${message}"></div>
+        </form>
+    </div>
+
+    <!-- Bạn có thể thêm form signup và forgot ở đây hoặc tách thành các trang riêng -->
+    <!-- Ví dụ: Form Signup (tạm thời giữ đơn giản, bạn có thể mở rộng) -->
+    <div class="form-box register" style="display: none;">
+        <!-- Nội dung form signup tương tự, nhưng vì yêu cầu chỉ login cơ bản, tôi giữ placeholder -->
+        <form th:action="@{/signup}" method="post">
+            <!-- Các field tương tự mã cũ, nhưng đơn giản hóa -->
+            <h1 th:text="#{signup.title}">Đăng ký</h1>
+            <!-- ... thêm các input với th:placeholder="#{signup.someKey}" ... -->
+            <button type="submit" class="btn" th:text="#{signup.submitBtn}">Đăng ký</button>
+        </form>
+    </div>
+
+    <div class="form-box forgot" style="display: none;">
+
+    </div>
+</div>
+
+<script th:src="@{/js/login.js}"></script>
+<script>
+    // Logic toggle form (dựa trên mã cũ, điều chỉnh cho Thymeleaf)
+    document.addEventListener("DOMContentLoaded", function () {
+        const container = document.querySelector(".container");
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('signup') && container) {
+            container.classList.add('active');
+            container.classList.remove('active-change');
+            // Hiển thị form register nếu cần
+        }
+    });
+</script>
+</body>
+</html>
