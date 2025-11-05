@@ -8,12 +8,11 @@
     display: block;
     width: 70%;
     max-width: 400px;
-    background-color: #FFF;
+    background-color: transparent;
     margin: 0;
-    padding: 2.25em;
+    padding: 0;
     box-sizing: border-box;
-    border: solid 1px #DDD;
-    border-radius: 0 110px 0 0;
+    border: none;
     font-family: 'Source Sans Pro', sans-serif;
 }
 
