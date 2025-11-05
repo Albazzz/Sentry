@@ -3,6 +3,7 @@ package com.mycompany.sentry.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+
 @Entity
 @Table(name = "Lessons")
 @Data
@@ -26,6 +27,9 @@ public class Lesson {
 
     @Column(name = "StudyStatus")
     private Integer studyStatus = 0;
+
+    @Column(name = "OrderIndex")
+    private Integer orderIndex = 0;
 
     @ManyToOne
     @JoinColumn(name = "CourseID", insertable = false, updatable = false)

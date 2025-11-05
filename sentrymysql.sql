@@ -307,8 +307,20 @@ CREATE TABLE GoogleToken (
     UserID INT,
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
-USE Sentry;
 
+-- Bảng OTP (xác thực email khi đăng ký)
+CREATE TABLE OTP (
+    otpID INT PRIMARY KEY AUTO_INCREMENT,
+    Email VARCHAR(255) NOT NULL,
+    Code VARCHAR(6) NOT NULL,
+    ExpiresAt DATETIME NOT NULL,
+    IsUsed TINYINT(1) DEFAULT 0,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_email_expires (Email, ExpiresAt, IsUsed)
+);
+
+USE Sentry;
+SELECT * FROM Users
 -- ==========================================
 -- 1. INSERT DỮ LIỆU MẪU CHO Roles
 -- ==========================================

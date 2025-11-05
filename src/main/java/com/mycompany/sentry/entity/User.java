@@ -1,5 +1,6 @@
 package com.mycompany.sentry.entity;
 
+import com.mycompany.sentry.constant.AppConstants;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -43,5 +44,5 @@ public class User {
     private String avatar;
 
     @Column(name = "Gender")
-    private String gender = "Khác";
+    private String gender = AppConstants.DEFAULT_GENDER;
 }

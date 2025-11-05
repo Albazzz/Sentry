@@ -13,3 +13,4 @@ public interface KanjiRepository extends JpaRepository<Kanji, Integer> {
 
 
 
+

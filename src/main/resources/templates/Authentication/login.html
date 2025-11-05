@@ -8,6 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/yeti.css}">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/yeti.css}">
     <!-- Các thư viện khác nếu cần, ví dụ GSAP cho animation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/MorphSVGPlugin.min.js"></script>
@@ -32,20 +33,35 @@
     <!-- Form Đăng nhập -->
     <div class="form-box login">
         <form th:action="@{/login}" method="post">
+            <!-- CSRF Token bắt buộc cho Spring Security -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
             <h1 th:text="#{login.title}">Đăng nhập</h1>
+
+            <!-- Hiển thị thông báo -->
+            <div th:if="${errorMessage}" class="alert alert-danger" style="color: red; padding: 10px; margin-bottom: 15px; border: 1px solid red; border-radius: 5px;">
+                <p th:text="${errorMessage}"></p>
+            </div>
+            <div th:if="${successMessage}" class="alert alert-success" style="color: green; padding: 10px; margin-bottom: 15px; border: 1px solid green; border-radius: 5px;">
+                <p th:text="${successMessage}"></p>
+            </div>
+            <div th:if="${warningMessage}" class="alert alert-warning" style="color: orange; padding: 10px; margin-bottom: 15px; border: 1px solid orange; border-radius: 5px;">
+                <p th:text="${warningMessage}"></p>
+            </div>
+
             <div class="input-box">
-                <input type="email" id="email" name="email" th:placeholder="#{login.emailPlaceholder}" th:value="${email}" required>
+                <input type="email" id="email" name="email" th:placeholder="#{login.emailPlaceholder}" required>
                 <i class='bx bxs-user'></i>
             </div>
             <div class="input-box">
-                <input type="password" id="password" name="password" th:placeholder="#{login.passwordPlaceholder}" th:value="${password}" required>
+                <input type="password" id="password" name="password" th:placeholder="#{login.passwordPlaceholder}" required>
                 <i class='bx bxs-lock-alt'></i>
             </div>
 
             <div class="box-box">
                 <div class="checkbox-group">
                     <label for="rememberMe" th:text="#{login.rememberMe}">Lưu tài khoản</label>
-                    <input type="checkbox" id="rememberMe" name="rememberMe" th:checked="${rememberMe == 'on'}" />
+                    <input type="checkbox" id="rememberMe" name="rememberMe" />
                 </div>
                 <div class="forgot-link">
                     <a th:href="@{/forgot-password}" th:text="#{login.forgotPassword}">Quên mật khẩu?</a>
@@ -60,24 +76,10 @@
                 <a href="#"><i class='bx bxl-github'></i></a>
                 <a href="#"><i class='bx bxl-linkedin'></i></a>
             </div>
-            <div th:if="${param.error}" class="error-message" style="color: red;">
-                <p th:text="#{login.errorInvalidCredentials}">Email hoặc mật khẩu không đúng!</p>
-            </div>
-            <div th:if="${message}" class="error-message" style="color: red;" th:text="${message}"></div>
         </form>
     </div>
 
-    <!-- Bạn có thể thêm form signup và forgot ở đây hoặc tách thành các trang riêng -->
-    <!-- Ví dụ: Form Signup (tạm thời giữ đơn giản, bạn có thể mở rộng) -->
-    <div class="form-box register" style="display: none;">
-        <!-- Nội dung form signup tương tự, nhưng vì yêu cầu chỉ login cơ bản, tôi giữ placeholder -->
-        <form th:action="@{/signup}" method="post">
-            <!-- Các field tương tự mã cũ, nhưng đơn giản hóa -->
-            <h1 th:text="#{signup.title}">Đăng ký</h1>
-            <!-- ... thêm các input với th:placeholder="#{signup.someKey}" ... -->
-            <button type="submit" class="btn" th:text="#{signup.submitBtn}">Đăng ký</button>
-        </form>
-    </div>
+    
 
     <div class="form-box forgot" style="display: none;">
 

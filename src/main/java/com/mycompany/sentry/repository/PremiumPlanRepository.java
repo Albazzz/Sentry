@@ -10,3 +10,4 @@ public interface PremiumPlanRepository extends JpaRepository<PremiumPlan, Intege
 
 
 
+

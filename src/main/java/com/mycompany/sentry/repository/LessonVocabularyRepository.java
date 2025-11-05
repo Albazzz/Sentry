@@ -10,8 +10,9 @@ import java.util.List;
 @Repository
 public interface LessonVocabularyRepository extends JpaRepository<LessonVocabulary, LessonVocabularyId> {
     List<LessonVocabulary> findByLessonID(Integer lessonID);
-    List<LessonVocabulary> findByVocabularyID(Integer vocabularyID);
+    List<LessonVocabulary> findByVocabID(Integer vocabID);
 }
+
 
 
 

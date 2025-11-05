@@ -16,3 +16,4 @@ public interface CourseRatingRepository extends JpaRepository<CourseRating, Inte
 
 
 
+

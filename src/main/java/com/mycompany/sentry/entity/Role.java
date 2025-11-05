@@ -14,5 +14,3 @@ public class Role {
     @Column(name = "RoleName", unique = true, nullable = false)
     private String roleName;
 }
-
-

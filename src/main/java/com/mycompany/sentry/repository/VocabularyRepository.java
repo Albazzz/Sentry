@@ -13,3 +13,4 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Integer>
 
 
 
+

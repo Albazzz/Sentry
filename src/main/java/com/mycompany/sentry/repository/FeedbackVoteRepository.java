@@ -16,3 +16,4 @@ public interface FeedbackVoteRepository extends JpaRepository<FeedbackVote, Inte
 
 
 
+
