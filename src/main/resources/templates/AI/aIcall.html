@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{aicall.pageTitle}">Chatbot tiếng Nhật</title>
+
+    <!-- Fonts & CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/voiceAI.css}">
+
+    <!-- ResponsiveVoice JS -->
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=YC77U5uD"></script>
+</head>
+<body>
+
+<!-- NAV: DÙNG authUser TỪ GLOBAL -->
+<div th:insert="~{Home/nav :: nav}"></div>
+
+<!-- AI Chat Container -->
+<div class="container mt-4">
+    <h1 class="chat-title" th:text="#{aicall.title}">Chatbot với giọng nói</h1>
+    <div class="chat-container">
+        <div id="chatOutput"></div>
+    </div>
+    <div class="button-container">
+        <button id="toggleButton" onclick="toggleRecognition()" class="control-icon mic-icon">
+            <img th:src="@{/image/microphone.png}" width="24" height="24" alt="Mic">
+        </button>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Kiểm tra hỗ trợ SpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert('Trình duyệt không hỗ trợ nhận diện giọng nói.');
+    }
+
+    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+    if (recognition) {
+        recognition.lang = 'ja-JP';
+        recognition.interimResults = false;
+        recognition.continuous = false;
+    }
+
+    const toggleButton = document.getElementById('toggleButton');
+    const chatOutput = document.getElementById('chatOutput');
+    let isListening = false;
+
+    // FIX 1: Dùng Elvis operator để tránh lỗi cú pháp
+    const currentUserAvatar = /*[[ ${authUser?.avatar ?: '/image/guest-avatar.png'} ]]*/ '/image/guest-avatar.png';
+    const aiAvatarUrl = /*[[ @{/image/ai-avatar.png} ]]*/ '/image/ai-avatar.png';
+
+    // Xử lý kết quả giọng nói
+    recognition.onresult = async (event) => {
+        const transcript = event.results[0][0].transcript.trim();
+        if (!transcript) return;
+        appendMessage(transcript, 'user-message');
+        await sendToAI(transcript);
+    };
+
+    recognition.onerror = (event) => {
+        appendMessage(`Lỗi nhận diện: ${event.error}`, 'error-message');
+        stopListening();
+    };
+
+    recognition.onend = () => {
+        if (isListening) {
+            stopListening();
+            appendMessage('Đã dừng nghe.', 'error-message');
+        }
+    };
+
+    function toggleRecognition() {
+        if (!recognition) return;
+
+        if (!isListening) {
+            startListening();
+        } else {
+            stopListening();
+        }
+    }
+
+    function startListening() {
+        appendMessage('Đang nghe...', 'error-message');
+        recognition.start();
+        toggleButton.classList.remove('mic-icon');
+        toggleButton.classList.add('voice-icon');
+        isListening = true;
+    }
+
+    function stopListening() {
+        recognition.stop();
+        toggleButton.classList.remove('voice-icon');
+        toggleButton.classList.add('mic-icon');
+        isListening = false;
+    }
+
+    function appendMessage(message, className) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${className}`;
+
+        const wrapper = document.createElement('div');
+        wrapper.className =
+            className.includes('user') ? 'user-message-wrapper' :
+                className.includes('ai') ? 'ai-message-wrapper' : 'error-message-wrapper';
+
+        const content = document.createElement('div');
+        content.className = 'message-content';
+        content.textContent = message;
+
+        // Thêm avatar
+        if (className === 'ai-message' || className === 'user-message') {
+            const avatar = document.createElement('img');
+            avatar.className = 'avatar';
+            avatar.src = className === 'ai-message' ? aiAvatarUrl : currentUserAvatar;
+            avatar.alt = 'Avatar';
+            wrapper.appendChild(avatar);
+        }
+
+        wrapper.appendChild(content);
+        messageDiv.appendChild(wrapper);
+        chatOutput.appendChild(messageDiv);
+        chatOutput.scrollTop = chatOutput.scrollHeight;
+    }
+
+    async function sendToAI(query) {
+        const formData = new FormData();
+        formData.append("query", query);
+        formData.append("bot_id", "8828357f92f7696d8d1d5220");
+        formData.append("conversation_id", "demo-" + Date.now());
+        formData.append("model_name", "gemini-2.5-flash-preview-05-20");
+        formData.append("api_key", "AIzaSyAH5Su96L-fRZBAzWH46VD5ICXyf9Jpihs");
+
+        try {
+            const response = await fetch('https://ai.ftes.vn/api/ai/rag_agent_template/stream', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NjI5MDQwMjM5M2MzNTg5Y2QwMjEzMSJ9.8Ze_T_XpEWOI3Mi3pS5XgLHXw92YmqDZIsOJtRILvVw'
+                },
+                body: formData
+            });
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let finalResponse = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const text = decoder.decode(value);
+                const lines = text.split('\n').filter(line => line.trim());
+
+                for (const line of lines) {
+                    try {
+                        const data = JSON.parse(line);
+                        if (data.type === 'final' && data.content?.final_response) {
+                            finalResponse = data.content.final_response;
+                        }
+                    } catch (e) {
+                        // Bỏ qua dòng không phải JSON
+                    }
+                }
+            }
+
+            if (finalResponse) {
+                handleAIResponse(finalResponse);
+            } else {
+                appendMessage('Không nhận được phản hồi từ AI.', 'error-message');
+            }
+
+        } catch (error) {
+            console.error('Lỗi API:', error);
+            appendMessage('Lỗi kết nối đến AI. Vui lòng thử lại.', 'error-message');
+        }
+    }
+
+    function handleAIResponse(response) {
+        let cleaned = response.trim();
+
+        // Xử lý câu trả lời dạng "「Có」..."
+        if (/^(「Có|Có)/.test(cleaned)) {
+            cleaned = cleaned.replace(/^(「Có」|Có)\s*/, '').trim();
+        } else if (/^(「Không|Không)/.test(cleaned)) {
+            cleaned = 'Câu hỏi không đúng, vui lòng hỏi lại.';
+        }
+
+        appendMessage(cleaned, 'ai-message');
+
+        // Phát giọng nói (chỉ nếu hỗ trợ)
+        if (window.responsiveVoice && typeof responsiveVoice.speak === 'function') {
+            responsiveVoice.speak(cleaned, 'Japanese Female', {
+                rate: 1.0,
+                onstart: () => console.log('Đang phát giọng nói...'),
+                onend: () => console.log('Đã phát xong.')
+            });
+        }
+    }
+
+    // Khởi động khi trang tải xong
+    window.addEventListener('load', () => {
+        console.log('ResponsiveVoice ready:', !!window.responsiveVoice);
+        appendMessage('Chào mừng bạn đến với Chatbot tiếng Nhật!', 'ai-message');
+    });
+    /*]]>*/
+</script>
+
+</body>
+</html>

@@ -32,6 +32,11 @@ public class AuthController {
             return "Authentication/login"; // Quay lại form với lỗi
         }
     }
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login?logout";
+    }
 
     // Các mapping khác: /signup, /forgot-password có thể thêm sau
 }

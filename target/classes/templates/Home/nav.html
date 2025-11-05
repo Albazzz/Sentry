@@ -1,32 +1,26 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
-<head>
-    <meta charset="UTF-8">
-    <title>Sentry</title>
-</head>
-<body>
+
 <nav class="navbar navbar-expand-lg bg-light py-3" th:fragment="nav">
     <div class="container-fluid">
         <div class="row align-items-center w-100">
             <div class="col-1 d-flex justify-content-evenly">
-                <img th:src="@{/image/logo.png}" alt="Wasabii Logo" class="img-fluid" style="max-height: 80px;">
+                <img th:src="@{/image/logo.png}" th:alt="#{logo.alt}" class="img-fluid" style="max-height: 80px;">
             </div>
 
             <div class="col-6">
                 <div class="nav-links d-flex justify-content-evenly align-items-center h-100">
-                    <a class="nav-link px-2" th:href="@{/}">Trang Chủ</a>
-                    <a class="nav-link px-2" th:href="@{/introduce}">Giới Thiệu</a>
-                    <a class="nav-link px-2" th:href="@{/courses}">Khóa Học</a>
-                    <a class="nav-link px-2" th:href="@{${authUser == null ? '/login' : '/payment'}}">Premium</a>
-                    <a class="nav-link px-2" th:href="@{${authUser == null ? '/login' : '/flashcard'}}">FlashCard</a>
-                    <a class="nav-link px-2" th:href="@{/search}">Tra Cứu</a>
+                    <a class="nav-link px-2" th:href="@{/}" th:text="#{nav.home}">Trang Chủ</a>
+                    <a class="nav-link px-2" th:href="@{/introduce}" th:text="#{nav.introduce}">Giới Thiệu</a>
+                    <a class="nav-link px-2" th:href="@{/courses}" th:text="#{nav.courses}">Khóa Học</a>
+                    <a class="nav-link px-2" th:href="@{${authUser == null ? '/login' : '/payment'}}" th:text="#{nav.premium}">Premium</a>
+                    <a class="nav-link px-2" th:href="@{${authUser == null ? '/login' : '/flashcard'}}" th:text="#{nav.flashcard}">FlashCard</a>
+                    <a class="nav-link px-2" th:href="@{/search}" th:text="#{nav.lookup}">Tra Cứu</a>
                 </div>
             </div>
 
             <div class="col-3 d-flex justify-content-end search-container">
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input type="search" class="form-control" id="searchCourseInput" placeholder="Tìm kiếm khóa học..." aria-label="Tìm kiếm khóa học">
+                    <input type="search" class="form-control" id="searchCourseInput" th:placeholder="#{search.course.placeholder}" aria-label="#{search.course.ariaLabel}">
                 </div>
                 <div id="searchResults"></div>
             </div>
@@ -51,8 +45,11 @@
                     </ul>
                 </div>
                 <div th:if="${authUser == null}">
-                    <a th:href="@{/login}" class="btn-wasabii">Đăng Nhập</a>
-                    <a th:href="@{/login(signup=true)}" class="btn-wasabii">Đăng Ký</a>
+                    <a th:href="@{/login}" class="btn-wasabii d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-circle-user"></i>
+                        <span th:text="#{nav.login}">Đăng Nhập</span>
+                    </a>
+
                 </div>
                 <div th:if="${authUser != null}">
                     <div class="dropdown">
@@ -62,37 +59,36 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li>
-                                <a class="dropdown-item" th:href="@{/profile}">Profile</a>
+                                <a class="dropdown-item" th:href="@{/profile}" th:text="#{user.profile}">Profile</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" th:href="@{/chatrealtime}">chat</a>
+                                <a class="dropdown-item" th:href="@{/chatrealtime}" th:text="#{user.chat}">chat</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" th:href="@{/videocall}"
-                                   onclick="checkVideoCallPermission(event)">
+                                <a class="dropdown-item" th:href="@{AI/aicall}"
+                                   onclick="checkVideoCallPermission(event)" th:text="#{user.videoCall}">
                                     Video Call
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" th:href="@{/voiceai}"
-                                   onclick="checkAICallPermission(event)">
+                                <a class="dropdown-item" th:href="@{/aicall}" th:text="#{user.aiCall}">
                                     Call With AI
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item" th:href="@{/limit-info}">
-                                    <i class="fas fa-chart-line"></i> Thông tin giới hạn
+                                    <i class="fas fa-chart-line"></i> <span th:text="#{user.limitInfo}">Thông tin giới hạn</span>
                                 </a>
                             </li>
                             <li th:if="${authUser.roleID == 3}">
-                                <a class="dropdown-item" th:href="@{/teacher_dashboard}">Dashboard</a>
+                                <a class="dropdown-item" th:href="@{/teacher_dashboard}" th:text="#{user.dashboard}">Dashboard</a>
                             </li>
                             <li th:if="${authUser.roleID == 4}">
-                                <a class="dropdown-item" th:href="@{/statis}">Admin</a>
+                                <a class="dropdown-item" th:href="@{/statis}" th:text="#{user.admin}">Admin</a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <a class="dropdown-item text-danger" th:href="@{/logout}">Đăng Xuất</a>
+                                <a class="dropdown-item text-danger" th:href="@{/logout}" th:text="#{user.logout}">Đăng Xuất</a>
                             </li>
                         </ul>
                     </div>
@@ -101,104 +97,3 @@
         </div>
     </div>
 </nav>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script th:src="@{/js/premium-check.js}"></script>
-
-<script th:inline="javascript">
-
-    // Sửa logic hàm check quyền (dùng event.preventDefault)
-    function checkVideoCallPermission(event) {
-        event.preventDefault(); // Ngăn trình duyệt chuyển trang
-        // Dùng .closest('a') để đảm bảo lấy đúng thẻ <a> nếu người dùng click vào icon bên trong
-        const targetLink = event.target.closest('a');
-
-        PremiumChecker.handleVideoCallPermission(
-            () => {
-                // Có quyền: Cho phép chuyển trang
-                window.location.href = targetLink.href;
-            },
-            (error) => {
-                // Không có quyền: Không làm gì cả
-                console.error("Không có quyền Video Call:", error);
-            }
-        );
-    }
-
-    function checkAICallPermission(event) {
-        event.preventDefault(); // Ngăn trình duyệt chuyển trang
-        const targetLink = event.target.closest('a');
-
-        PremiumChecker.handleAICallPermission(
-            () => {
-                // Có quyền: Cho phép chuyển trang
-                window.location.href = targetLink.href;
-            },
-            (error) => {
-                // Không có quyền: Không làm gì cả
-                console.error("Không có quyền AI Call:", error);
-            }
-        );
-    }
-
-    $(document).ready(function () {
-
-        /* Sửa lỗi cú pháp Thymeleaf trong JavaScript */
-        const searchUrl = /*[[@{/searchCourse}]]*/ '/searchCourse';
-        const detailUrlTemplate = /*[[@{/courseDetail(id=__ID__)}]]*/ '/courseDetail?id=__ID__';
-
-        $('#searchCourseInput').on('input', function () {
-            const query = $(this).val().trim();
-            const $searchResults = $('#searchResults');
-            $searchResults.empty().removeClass('show');
-
-            if (query.length > 0) {
-                $.ajax({
-                    url: searchUrl, // Dùng biến đã sửa
-                    type: 'GET',
-                    data: {query: query},
-                    dataType: 'json',
-                    success: function (data) {
-                        console.log('Raw search response:', data);
-                        if (data && Array.isArray(data) && data.length > 0) {
-                            const $ul = $('<ul>').addClass('list-group');
-                            $.each(data, function (_, course) {
-                                if (course.isHidden === false) {
-                                    const courseTitle = course.title ? String(course.title) : 'Không có tiêu đề';
-                                    const courseDesc = course.description ? String(course.description) : 'Không có mô tả';
-                                    const courseId = course.courseID ? String(course.courseID) : '';
-
-                                    // Sửa URL chi tiết
-                                    const finalDetailUrl = detailUrlTemplate.replace('__ID__', encodeURIComponent(courseId));
-
-                                    const $li = $('<li>').addClass('list-group-item')
-                                        .append($('<h5>').text(courseTitle))
-                                        .append($('<p>').text(courseDesc))
-                                        .append($('<a>')
-                                            .addClass('btn btn-sm btn-wasabii')
-                                            .attr('href', finalDetailUrl) // Dùng link đã sửa
-                                            .text('Xem chi tiết'));
-                                    $ul.append($li);
-                                }
-                            });
-                            if ($ul.children().length > 0) {
-                                $searchResults.append($ul).addClass('show');
-                            } else {
-                                $searchResults.append('<div class="alert alert-info m-0">Không tìm thấy khóa học nào.</div>').addClass('show');
-                            }
-                        } else {
-                            $searchResults.append('<div class="alert alert-info m-0">Không tìm thấy khóa học nào.</div>').addClass('show');
-                        }
-                        console.log('Rendered HTML:', $searchResults.html());
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('AJAX error:', status, error, xhr.responseText);
-                        $searchResults.append('<div class="alert alert-danger m-0">Đã xảy ra lỗi khi tìm kiếm: ' + error + '</div>').addClass('show');
-                    }
-                });
-            }
-        });
-    });
-</script>
-</body>
-</html>
