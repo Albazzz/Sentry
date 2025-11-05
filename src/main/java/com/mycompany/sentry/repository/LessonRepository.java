@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
     List<Lesson> findByCourseID(Integer courseID);
-    List<Lesson> findByCourseIDOrderByOrderIndexAsc(Integer courseID);
+    List<Lesson> findByCourseIDOrderByLessonIDAsc(Integer courseID);
 }
 
 

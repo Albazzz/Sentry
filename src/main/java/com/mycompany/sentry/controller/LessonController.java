@@ -22,7 +22,7 @@ public class LessonController {
 
     @GetMapping("/course/{courseId}")
     public List<Lesson> getLessonsByCourse(@PathVariable Integer courseId) {
-        return lessonRepository.findByCourseIDOrderByOrderIndexAsc(courseId);
+        return lessonRepository.findByCourseIDOrderByLessonIDAsc(courseId);
     }
 
     @GetMapping("/{id}")

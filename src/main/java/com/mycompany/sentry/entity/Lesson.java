@@ -28,9 +28,6 @@ public class Lesson {
     @Column(name = "StudyStatus")
     private Integer studyStatus = 0;
 
-    @Column(name = "OrderIndex")
-    private Integer orderIndex = 0;
-
     @ManyToOne
     @JoinColumn(name = "CourseID", insertable = false, updatable = false)
     private Course course;
