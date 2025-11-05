@@ -1,37 +1,66 @@
 package com.mycompany.sentry.controller;
 
-import com.mycompany.sentry.service.UserService;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.mycompany.sentry.constant.AppConstants;
+import com.mycompany.sentry.security.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthController {
-    @Autowired
-    private UserService userService;
 
+    /**
+     * Hiển thị form đăng nhập
+     * Spring Security sẽ tự động xử lý POST /login
+     */
     @GetMapping("/login")
-    public String showLoginForm(Model model) {
-        return "Authentication/login"; // Trả về template login.html
-    }
+    public String showLoginForm(
+            @RequestParam(value = "error", required = false) String error,
+            @RequestParam(value = "logout", required = false) String logout,
+            @RequestParam(value = "expired", required = false) String expired,
+            Model model) {
 
-    @PostMapping("/login")
-    public String login(@RequestParam String email, @RequestParam String password,
-                        @RequestParam(required = false) String rememberMe,
-                        HttpSession session, Model model) {
-        if (userService.authenticate(email, password)) {
-            // Lưu session đơn giản
-            session.setAttribute("authUser", userService.findByEmail(email).get());
-            return "redirect:/"; // Chuyển về trang chủ (index)
-        } else {
-            model.addAttribute("message", "Email hoặc mật khẩu không đúng!");
-            return "Authentication/login"; // Quay lại form với lỗi
+        if (error != null) {
+            model.addAttribute("errorMessage", AppConstants.MSG_AUTH_LOGIN_ERROR);
         }
+        if (logout != null) {
+            model.addAttribute("successMessage", AppConstants.MSG_AUTH_LOGOUT_SUCCESS);
+        }
+        if (expired != null) {
+            model.addAttribute("warningMessage", AppConstants.MSG_AUTH_SESSION_EXPIRED);
+        }
+
+        return "Authentication/login";
+    }
+    
+    /**
+     * Hiển thị form đăng ký
+     */
+    @GetMapping("/signup")
+    public String showRegisterForm(Model model) {
+        return "Authentication/register";
     }
 
-    // Các mapping khác: /signup, /forgot-password có thể thêm sau
+    /**
+     * Trang access denied
+     */
+    @GetMapping("/access-denied")
+    public String accessDenied(Model model) {
+        model.addAttribute("errorMessage", AppConstants.MSG_AUTH_ACCESS_DENIED);
+        return "error/access-denied";
+    }
+
+    /**
+     * Endpoint test để xem user hiện tại đã đăng nhập
+     * @AuthenticationPrincipal tự động inject user đang đăng nhập
+     */
+    @GetMapping("/profile")
+    public String profile(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        if (userDetails != null) {
+            model.addAttribute("user", userDetails.getUser());
+        }
+        return "profile";
+    }
 }

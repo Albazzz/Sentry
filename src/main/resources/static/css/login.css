@@ -24,7 +24,9 @@ body {
 .container {
     position: relative;
     width: 1000px;
-    height: 700px;
+    min-height: 700px;
+    height: auto;
+    max-height: 90vh;
     background: #fff;
     margin: 20px;
     border-radius: 30px;
@@ -48,6 +50,9 @@ form {
 
 .form-box h1 {
     color: #bf7026;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 32px;
 }
 .form-box {
     position: absolute;
@@ -56,14 +61,42 @@ form {
     height: 100%;
     background: #fff;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     color: #bf7026;
     text-align: center;
-    padding: 40px;
+    padding: 30px 40px;
     z-index: 1;
     transition:
             0.6s ease-in-out 1.2s,
             visibility 0s 1s;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.form-box form {
+    width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Scrollbar cho form-box */
+.form-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.form-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.form-box::-webkit-scrollbar-thumb {
+    background: #e94f64;
+    border-radius: 10px;
+}
+
+.form-box::-webkit-scrollbar-thumb:hover {
+    background: #d43e55;
 }
 
 .container.active .form-box {
@@ -79,7 +112,12 @@ form {
 
 .input-box {
     position: relative;
-    margin: 25px 0;
+    margin: 15px 0;
+}
+
+/* Giảm margin cho các input-box trong form đăng ký */
+.form-box.register .input-box {
+    margin: 12px 0;
 }
 
 .input-box input {
@@ -126,11 +164,19 @@ form {
     font-size: 16px;
     color: #fff;
     font-weight: 600;
+    margin-top: 10px;
+}
+
+/* Giảm margin cho button trong form đăng ký */
+.form-box.register .btn {
+    margin-top: 15px;
 }
 
 .social-icons {
     display: flex;
     justify-content: center;
+    margin-top: 15px;
+    margin-bottom: 10px;
 }
 
 .social-icons a {
@@ -141,6 +187,12 @@ form {
     font-size: 24px;
     color: #c78d56;
     margin: 0 8px;
+}
+
+/* Giảm margin cho social icons trong form đăng ký */
+.form-box.register .social-icons {
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 .toggle-box {
@@ -172,10 +224,13 @@ form {
     color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     z-index: 2;
     transition: 0.5s ease-in-out;
+    padding: 40px;
+    padding-top: 80px;
+    text-align: center;
 }
 
 .toggle-panel.toggle-left {
@@ -196,21 +251,42 @@ form {
     transition-delay: 1.2s;
 }
 
-.toggle-panel p {
-    position: absolute;
-    top: 60%;
-    left: 30%;
+/* Căn giữa tiêu đề trong toggle panel */
+.toggle-panel h1 {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #fff;
 }
 
+/* Căn giữa đoạn văn bản - đẩy xuống dưới */
+.toggle-panel p {
+    font-size: 16px;
+    margin-top: auto;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: #fff;
+    opacity: 0.95;
+}
+
+/* Nút đăng ký/đăng nhập trong toggle panel */
 .toggle-panel .btn {
-    position: absolute;
-    top: 70%;
-    left: 30%;
-    width: 160px;
-    height: 46px;
+    width: 180px;
+    height: 48px;
     background: transparent;
     border: 2px solid #fff;
     box-shadow: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.3s ease;
+    margin-bottom: 80px;
+}
+
+.toggle-panel .btn:hover {
+    background: #fff;
+    color: #e94f64;
+    transform: scale(1.05);
 }
 
 .box-box {
@@ -392,16 +468,17 @@ body::before {
 
 .custom-select-box select {
     width: 100%;
-    padding: 12px 40px 12px 15px;
+    padding: 13px 40px 13px 20px;
     font-size: 16px;
     color: #333;
-    background: #f0f0f0;
+    background: #eee;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     font-family: inherit;
+    outline: none;
 }
 
 /* Icon hoặc dấu mũi tên nếu bạn muốn */
@@ -418,4 +495,48 @@ body::before {
     pointer-events: none;
     color: #e74c3c;
     font-size: 14px;
+}
+
+/* Style cho file input */
+input[type="file"] {
+    cursor: pointer;
+    font-size: 14px;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+    background: #e94f64;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+    background: #d43e55;
+}
+
+/* Style cho label trong form */
+.input-box label {
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.input-box small {
+    display: block;
+    margin-top: 5px;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Giảm padding cho form đăng ký */
+.form-box.register {
+    padding: 25px 40px;
+}
+
+.form-box.register form {
+    padding-bottom: 10px;
 }
